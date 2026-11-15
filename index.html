@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b1215">
+<title>VideoTranslate AI</title>
+<style>
+:root{--ink:#0b1215;--panel:#121c20;--raise:#19262b;--rule:#26373c;--tx:#e8eef0;--mu:#8a9ea5;--sub:#ffd23f;--ok:#4fd1a5;--er:#ff7a7a;color-scheme:dark}
+*{box-sizing:border-box;margin:0}[hidden]{display:none!important}
+body{min-height:100svh;background:var(--ink);color:var(--tx);font:16px/1.55 "Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;display:flex;flex-direction:column}
+header{padding:16px clamp(16px,4vw,40px);border-bottom:1px solid var(--rule);font-weight:800}
+header span{background:var(--sub);color:#141000;padding:0 .35em;margin-left:.3em;border-radius:3px}
+main{width:min(860px,100%);margin:0 auto;padding:clamp(24px,6vw,56px) 16px 40px;display:grid;gap:22px;align-content:start;flex:1}
+h1{font-size:clamp(28px,6vw,46px);line-height:1.12;letter-spacing:-.03em;text-align:center;text-wrap:balance}
+.lead{color:var(--mu);text-align:center;max-width:56ch;margin:-6px auto 0}
+.frame{position:relative;aspect-ratio:16/9;max-height:280px;width:100%;border-radius:10px;overflow:hidden;background:linear-gradient(160deg,#27414a,#0f191d);border:1px solid var(--rule)}
+.frame small{position:absolute;top:12px;left:12px;background:#0009;color:#d6e4e8;font-size:13px;padding:2px 8px;border-radius:4px}
+.cap{position:absolute;left:50%;bottom:14%;transform:translateX(-50%);width:max-content;max-width:88%;text-align:center;background:rgba(0,0,0,.78);color:#fff;font-weight:700;font-size:clamp(15px,3.6vw,24px);line-height:1.3;padding:.12em .55em;border-radius:3px;transition:opacity .25s}
+.panel{background:var(--panel);border:1px solid var(--rule);border-radius:10px;padding:16px;display:grid;gap:14px}
+.bar{display:flex;gap:8px}.bar input{flex:1;min-width:0}
+input[type=url],select{width:100%;background:var(--raise);border:1px solid var(--rule);color:var(--tx);border-radius:8px;padding:14px;font:inherit}
+:focus-visible{outline:2px solid var(--sub);outline-offset:2px}
+.btn,.ghost{font:inherit;font-weight:700;border-radius:8px;padding:14px 20px;cursor:pointer;border:1px solid transparent;text-decoration:none;text-align:center;transition:background .2s,opacity .2s}
+.btn{background:var(--sub);color:#141000}.btn:hover{background:#ffe070}.btn:disabled{opacity:.55;cursor:progress}
+.ghost{background:transparent;color:var(--tx);border-color:var(--rule)}.ghost:hover{background:var(--raise)}
+.opts{display:flex;flex-wrap:wrap;gap:10px;align-items:end}.opts label{display:grid;gap:4px;color:var(--mu);font-size:14px;flex:1 1 200px}
+.ck{display:flex;gap:10px;align-items:flex-start;color:var(--mu);font-size:14px}.ck input{margin-top:4px;accent-color:var(--sub)}
+.hint{color:var(--mu);font-size:14px}.warn{color:var(--er);font-size:14px}
+.top{display:flex;justify-content:space-between;gap:12px;font-weight:700}
+.track{height:8px;border-radius:99px;background:var(--raise);overflow:hidden}.track i{display:block;height:100%;width:0;background:var(--sub);transition:width .6s ease}
+#steps{list-style:none;padding:0;display:grid;gap:10px}#steps li{display:flex;align-items:center;gap:12px;color:var(--mu)}
+.d{width:20px;height:20px;border-radius:50%;border:2px solid var(--rule);display:grid;place-items:center;font-size:12px;flex:none}
+#steps li.on{color:var(--tx)}#steps li.on .d{border-color:var(--sub);border-top-color:transparent;animation:spin 1s linear infinite}
+#steps li.ok{color:var(--tx)}#steps li.ok .d{background:var(--ok);border-color:var(--ok);color:#06231a}#steps li.ok .d::after{content:"✓"}
+@keyframes spin{to{transform:rotate(1turn)}}
+.bad{border-color:#5a2f35}.bad b{color:var(--er)}.acts{display:flex;flex-wrap:wrap;gap:8px}
+.stage{display:grid;gap:14px}@media(min-width:860px){.stage{grid-template-columns:1fr 230px;align-items:start}}
+.pw{position:relative;width:fit-content;max-width:100%;margin:0 auto;background:#000;border-radius:8px;overflow:hidden;line-height:0}
+.pw video{display:block;max-width:100%;max-height:72vh;min-width:min(100%,280px)}
+.pw:fullscreen{width:100%;height:100%;display:grid;place-items:center;border-radius:0}.pw:fullscreen video{width:100%;height:100%;max-height:none;object-fit:contain}
+.cue{position:absolute;left:50%;transform:translateX(-50%);width:max-content;max-width:90%;text-align:center;white-space:pre-line;font-weight:700;line-height:1.3;border-radius:.15em;padding:.1em .5em;pointer-events:none;font-size:calc(var(--fs,20) / 288 * .85 * var(--ph,360px));color:var(--c,#fff);background:rgba(0,0,0,var(--bg,.6));text-shadow:0 0 .12em #000,0 .04em .1em #000}
+.cue:empty{display:none}.cue.bottom{bottom:5.5%}.cue.top{top:5.5%}.cue.middle{top:50%;transform:translate(-50%,-50%)}
+.set label{display:grid;gap:6px;font-size:14px;color:var(--mu)}.set input[type=range]{width:100%;accent-color:var(--sub)}
+.set input[type=color]{width:100%;height:38px;background:var(--raise);border:1px solid var(--rule);border-radius:8px;padding:2px}
+.sw{display:flex!important;grid-auto-flow:column;align-items:center;gap:10px!important;color:var(--tx)!important;font-size:16px!important}.sw input{accent-color:var(--sub);width:18px;height:18px}
+.seg{display:flex;border:1px solid var(--rule);border-radius:8px;overflow:hidden}.seg button{flex:1;background:none;color:var(--mu);border:0;padding:9px 4px;font:inherit;font-size:14px;cursor:pointer}.seg button[aria-pressed=true]{background:var(--sub);color:#141000;font-weight:700}
+.dl{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}.dl .btn{grid-column:1/-1}
+footer{padding:20px 16px;text-align:center;color:var(--mu);font-size:13px;border-top:1px solid var(--rule)}
+@media(max-width:560px){.bar{flex-direction:column}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header>VideoTranslate<span>AI</span></header>
+<main>
+<section id="home" style="display:grid;gap:22px">
+  <h1>Terjemahkan video apa pun ke subtitle Indonesia</h1>
+  <p class="lead">Tempel link atau unggah video. AI mendeteksi bahasanya, menerjemahkan secara natural, dan membuat subtitle yang pas dengan ucapan.</p>
+  <div class="frame" aria-hidden="true"><small id="tag"></small><div class="cap" id="cap"></div></div>
+  <form id="f" class="panel">
+    <div class="bar"><input id="url" type="url" inputmode="url" placeholder="Tempel link video di sini" autocomplete="off" aria-label="Link video"><button class="btn" id="go">Translate Video</button></div>
+    <p class="hint" id="chip">YouTube, TikTok, Instagram, Facebook, X, dan situs lain.</p>
+    <div class="opts">
+      <label>Bahasa tujuan<select id="lang"></select></label>
+      <button type="button" class="ghost" id="pick">Unggah file video</button><input id="file" type="file" accept="video/*" hidden>
+    </div>
+    <label class="ck"><input type="checkbox" id="ok"><span>Saya memiliki hak atau izin untuk memproses video ini dan akan mematuhi ketentuan platform sumber.</span></label>
+    <p class="warn" id="warn" hidden></p>
+  </form>
+  <p class="hint">Link diproses dengan yt-dlp. Banyak situs berhasil, tetapi tidak semua dijamin: video privat, dibatasi umur atau wilayah, dan platform yang meminta login bisa gagal. Jika gagal, unggah file videonya.</p>
+</section>
+
+<section id="proc" class="panel" hidden>
+  <div class="top"><span id="ptitle">Memproses video</span><span id="pct">0%</span></div>
+  <div class="track"><i id="fill"></i></div>
+  <ol id="steps"></ol>
+  <p class="hint" id="pmsg"></p>
+</section>
+
+<section id="err" class="panel bad" hidden>
+  <b>Proses gagal</b><p id="emsg"></p>
+  <div class="acts"><button class="ghost" id="retry">Coba lagi</button><button class="ghost" id="up2">Unggah file video</button></div>
+</section>
+
+<section id="res" hidden style="display:grid;gap:14px">
+  <div><b id="rtitle"></b><p class="hint" id="rinfo"></p></div>
+  <div class="stage">
+    <div class="pw" id="pw"><video id="vid" controls playsinline preload="metadata"></video><div class="cue bottom" id="cue"></div></div>
+    <aside class="panel set">
+      <label class="sw"><input type="checkbox" id="son"><span>Tampilkan subtitle</span></label>
+      <label>Ukuran<input type="range" id="ssz" min="12" max="36"></label>
+      <label>Warna teks<input type="color" id="scl"></label>
+      <label>Latar belakang<input type="range" id="sbg" min="0" max="100"></label>
+      <div class="seg" id="spos"><button type="button" data-p="top">Atas</button><button type="button" data-p="middle">Tengah</button><button type="button" data-p="bottom">Bawah</button></div>
+      <button type="button" class="ghost" id="fs">Layar penuh</button>
+    </aside>
+  </div>
+  <div class="panel dl">
+    <button class="btn" id="dlv">Unduh video dengan subtitle</button>
+    <a class="ghost" id="srt">Unduh SRT</a><a class="ghost" id="vtt">Unduh VTT</a>
+    <button class="ghost" id="again" style="grid-column:1/-1">Terjemahkan video lain</button>
+  </div>
+  <p class="hint">Pengaturan ukuran, warna, latar, dan posisi berlaku juga untuk video yang diunduh.</p>
+</section>
+</main>
+<footer id="foot">Gunakan hanya untuk video milik Anda atau yang Anda punya izinnya.</footer>
+
+<script>
+const $=s=>document.querySelector(s),vis=(s,on)=>$(s).hidden=!on,sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const ST=['Fetching Video','Extracting Audio','Transcribing','Translating','Generating Subtitles'],SK=['fetch','audio','transcribe','translate','subs'];
+const NAME={id:'Indonesia',en:'Inggris',ms:'Melayu',ja:'Jepang',ko:'Korea',zh:'Mandarin',ar:'Arab',es:'Spanyol',fr:'Prancis',de:'Jerman'};
+const PL=[['YouTube',/(^|\.)(youtube\.com|youtu\.be)$/],['TikTok',/(^|\.)tiktok\.com$/],['Instagram',/(^|\.)instagram\.com$/],['Facebook',/(^|\.)(facebook\.com|fb\.watch)$/],['X',/(^|\.)(x|twitter)\.com$/]];
+const J=u=>fetch(u).then(r=>r.json());
+let job,tm,file,S={size:20,color:'#ffffff',bg:60,pos:'bottom',on:true};
+try{Object.assign(S,JSON.parse(localStorage.vtSet||'{}'))}catch{}
+
+// contoh pada hero: ucapan asli lalu subtitle Indonesia
+const DEMO=[['Inggris','We never thought it would actually work.','Kami nggak nyangka ini benar-benar berhasil.'],['Jepang','もう一度、最初からやってみよう。','Ayo kita coba lagi dari awal.'],['Korea','이게 우리가 찾던 답이에요.','Inilah jawaban yang selama ini kita cari.']];
+let di=0;const demo=()=>{const[l,a,b]=DEMO[di++%3],c=$('#cap');$('#tag').textContent='Audio: '+l;c.textContent=a;c.style.opacity=1;setTimeout(()=>{c.style.opacity=0;setTimeout(()=>{$('#tag').textContent='Subtitle: Indonesia';c.textContent=b;c.style.opacity=1},250)},1800)};
+demo();if(!matchMedia('(prefers-reduced-motion:reduce)').matches)setInterval(demo,4400);
+
+J('/api/config').then(c=>{
+  $('#lang').innerHTML=Object.keys(c.langs).map(k=>`<option value="${k}">${NAME[k]||c.langs[k]}</option>`).join('');
+  const w=[];if(!c.ready.ai)w.push('GEMINI_API_KEY belum diatur di server.');if(!c.ready.ffmpeg)w.push('ffmpeg belum terpasang di server.');if(!c.ready.ytdlp)w.push('yt-dlp belum terpasang: link tidak dapat diproses, gunakan unggah file.');
+  if(w.length){$('#warn').textContent=w.join(' ');vis('#warn',true)}
+  $('#foot').textContent=`Audio video dikirim ke Gemini (Google) untuk transkripsi dan terjemahan. Maksimal ${c.maxMinutes} menit per video. File dihapus otomatis dari server setelah ${c.ttlHours} jam. Gunakan hanya untuk video milik Anda atau yang Anda punya izinnya.`;
+}).catch(()=>{$('#warn').textContent='Tidak dapat terhubung ke server.';vis('#warn',true)});
+
+$('#url').oninput=e=>{file=null;let t='YouTube, TikTok, Instagram, Facebook, X, dan situs lain.';try{const h=new URL(e.target.value.trim()).hostname,p=PL.find(x=>x[1].test(h));t=p?p[0]+' terdeteksi.':h.replace(/^www\./,'')+': situs ini belum tentu didukung, tetapi akan dicoba.'}catch{}$('#chip').textContent=t};
+$('#pick').onclick=$('#up2').onclick=()=>$('#file').click();
+$('#file').onchange=e=>{file=e.target.files[0];if(!file)return;$('#url').value='';$('#chip').textContent='File dipilih: '+file.name;if(!$('#err').hidden){reset()}};
+
+const post=(fd,onp)=>new Promise((ok,no)=>{const x=new XMLHttpRequest();x.open('POST','/api/jobs');x.upload.onprogress=e=>e.lengthComputable&&onp(Math.round(e.loaded/e.total*100));x.onload=()=>{let j={};try{j=JSON.parse(x.responseText)}catch{}x.status<300?ok(j):no(new Error(j.error||'Gagal membuat pekerjaan.'))};x.onerror=()=>no(new Error('Tidak dapat terhubung ke server.'));x.send(fd)});
+
+$('#f').onsubmit=async e=>{
+  e.preventDefault();const url=$('#url').value.trim();
+  if(!file&&!url)return alert('Masukkan link video atau unggah file video.');
+  if(!$('#ok').checked)return alert('Centang konfirmasi hak penggunaan video terlebih dahulu.');
+  const fd=new FormData();fd.append('target',$('#lang').value);fd.append('consent','1');file?fd.append('file',file):fd.append('url',url);
+  $('#go').disabled=true;vis('#home',false);vis('#err',false);vis('#proc',true);
+  $('#steps').innerHTML=ST.map(s=>`<li><span class="d"></span>${s}</li>`).join('');$('#fill').style.width='0%';$('#pct').textContent='0%';$('#pmsg').textContent=file?'Mengunggah file…':'Mengirim permintaan…';
+  try{job=await post(fd,p=>{if(file){$('#pmsg').textContent=`Mengunggah file… ${p}%`}});poll()}catch(x){fail(x.message)}
+};
+async function poll(){
+  try{const j=await J('/api/jobs/'+job.id);if(j.error)throw new Error(j.error);job=j;paint();
+    if(j.status==='done')return done();if(j.status==='error')return fail(j.error)}
+  catch(x){if(/kedaluwarsa|tidak ditemukan/i.test(x.message))return fail(x.message)}
+  tm=setTimeout(poll,1200)
+}
+function paint(){
+  const i=Math.max(0,SK.indexOf(job.stage));
+  $('#fill').style.width=job.progress+'%';$('#pct').textContent=job.progress+'%';
+  $('#pmsg').textContent=job.queuePos?`Menunggu antrean, urutan ${job.queuePos}…`:job.message;
+  [...$('#steps').children].forEach((li,k)=>li.className=job.status==='queued'?'':k<i?'ok':k===i?'on':'');
+}
+function fail(m){clearTimeout(tm);vis('#proc',false);vis('#home',false);vis('#err',true);$('#emsg').textContent=m;$('#go').disabled=false}
+function reset(){clearTimeout(tm);['#proc','#err','#res'].forEach(s=>vis(s,false));vis('#home',true);$('#go').disabled=false;$('#vid').removeAttribute('src');$('#vid').load()}
+$('#retry').onclick=reset;$('#again').onclick=()=>{file=null;$('#url').value='';$('#file').value='';reset()};
+
+const mmss=s=>{s=Math.round(s||0);return`${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`};
+function done(){
+  vis('#proc',false);vis('#res',true);
+  const v=$('#vid'),b='/api/jobs/'+job.id;
+  if(document.fullscreenEnabled)v.setAttribute('controlslist','nofullscreen');else vis('#fs',false);
+  v.src=b+'/video';v.innerHTML=`<track kind="subtitles" src="${b}/subs.vtt" srclang="${job.target}" label="Subtitle">`;
+  const t=v.textTracks[0];t.mode='hidden';t.oncuechange=()=>{$('#cue').textContent=[...(t.activeCues||[])].map(c=>c.text).join('\n')};
+  $('#rtitle').textContent=job.title||'Video';
+  $('#rinfo').textContent=`Sumber: ${job.platform}. Bahasa asli: ${job.srcLang||'tidak diketahui'}. Durasi ${mmss(job.duration)}.`;
+  $('#srt').href=b+'/subs.srt?dl=1';$('#vtt').href=b+'/subs.vtt?dl=1';look();
+}
+function look(){
+  const c=$('#cue');c.style.setProperty('--fs',S.size);c.style.setProperty('--c',S.color);c.style.setProperty('--bg',S.bg/100);
+  c.className='cue '+S.pos;c.style.visibility=S.on?'visible':'hidden';
+  $('#son').checked=S.on;$('#ssz').value=S.size;$('#scl').value=S.color;$('#sbg').value=S.bg;
+  document.querySelectorAll('#spos button').forEach(x=>x.setAttribute('aria-pressed',x.dataset.p===S.pos));
+  try{localStorage.vtSet=JSON.stringify(S)}catch{}
+}
+$('#son').onchange=e=>{S.on=e.target.checked;look()};$('#ssz').oninput=e=>{S.size=+e.target.value;look()};
+$('#scl').oninput=e=>{S.color=e.target.value;look()};$('#sbg').oninput=e=>{S.bg=+e.target.value;look()};
+$('#spos').onclick=e=>{if(e.target.dataset.p){S.pos=e.target.dataset.p;look()}};
+$('#fs').onclick=()=>$('#pw').requestFullscreen();
+new ResizeObserver(()=>$('#pw').style.setProperty('--ph',$('#pw').clientHeight+'px')).observe($('#pw'));
+
+$('#dlv').onclick=async()=>{
+  const b=$('#dlv'),u='/api/jobs/'+job.id;b.disabled=true;b.textContent='Menyiapkan video…';
+  try{
+    let r=await(await fetch(u+'/render',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({size:S.size,color:S.color,bg:S.bg/100,pos:S.pos})})).json();
+    while(!r.error&&!['done','error'].includes(r.render?.status)){
+      b.textContent=r.render?.status==='processing'?`Merender subtitle… ${r.render.progress}%`:'Menunggu antrean…';
+      await sleep(1500);r=await J(u);
+    }
+    if(r.error||r.render.status==='error')throw new Error(r.error||r.render.error);
+    location.href=u+'/download.mp4';
+  }catch(x){alert(x.message)}
+  b.disabled=false;b.textContent='Unduh video dengan subtitle';
+};
+</script>
+</body>
+</html>
